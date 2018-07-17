@@ -47,19 +47,19 @@ export class ShippingAddress extends React.Component<{}, ShippingAddressState> {
             value={this.state.firstName}
             onChange={this.handleChange}
           />
+        </div>
+        <div className='form-group'>
+          <label htmlFor='lastName'>Last Name</label>
+          <input
+            type='text'
+            className='form-control'
+            name='lastName'
+            id='lastName'
+            value={this.state.lastName}
+            onChange={this.handleChange}
+          />
+        </div>
       </div>
-      <div className='form-group'>
-        <label htmlFor='lastName'>Last Name</label>
-        <input
-          type='text'
-          className='form-control'
-          name='lastName'
-          id='lastName'
-          value={this.state.lastName}
-          onChange={this.handleChange}
-        />
-      </div>
-    </div>
-  );
+    );
   }
 }
