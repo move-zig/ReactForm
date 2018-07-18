@@ -9,7 +9,7 @@ export interface Props {
   controlFunc: (event: React.ChangeEvent<HTMLElement>) => void;
 }
 
-export class SingleInput extends React.Component<Props> {
+export class Input extends React.Component<Props> {
   public render() {
     return (
       <div className='form-group'>

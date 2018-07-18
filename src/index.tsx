@@ -1,15 +1,17 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
+import { Footer } from './components/Footer';
 import { FormContainer } from './components/FormContainer';
-import { Header } from './components/header';
+import { Header } from './components/Header';
 
 export class App extends React.Component {
   public render() {
     return (
-      <div className='container'>
+      <div>
         <Header />
         <FormContainer />
+        <Footer />
       </div>
     );
   }
