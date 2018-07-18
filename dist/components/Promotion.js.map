@@ -1,0 +1,1 @@
+{"version":3,"file":"Promotion.js","sourceRoot":"","sources":["../../src/components/Promotion.tsx"],"names":[],"mappings":";;;;;;;;;AAAA,2CAA+B;AAElB,QAAA,SAAS,GAAG,cAAM,OAAA,CAC7B;IACE,4BAAI,SAAS,EAAC,aAAa,oBAAmB;IAC9C,6BAAK,SAAS,EAAC,KAAK;QAClB,6BAAK,SAAS,EAAC,iBAAiB;YAC9B,6CAAkB,CACd;QACN,6BAAK,SAAS,EAAC,iBAAiB;YAC9B,6CAAkB,CACd,CACF,CACF,CACP,EAZ8B,CAY9B,CAAC"}

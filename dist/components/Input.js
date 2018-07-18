@@ -18,23 +18,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = __importStar(require("react"));
-var ReactDOM = __importStar(require("react-dom"));
-var Footer_1 = require("./components/Footer");
-var FormContainer_1 = require("./components/FormContainer");
-var Header_1 = require("./components/Header");
-var App = /** @class */ (function (_super) {
-    __extends(App, _super);
-    function App() {
+var Input = /** @class */ (function (_super) {
+    __extends(Input, _super);
+    function Input() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    App.prototype.render = function () {
-        return (React.createElement("div", null,
-            React.createElement(Header_1.Header, null),
-            React.createElement(FormContainer_1.FormContainer, null),
-            React.createElement(Footer_1.Footer, null)));
+    Input.prototype.render = function () {
+        return (React.createElement("div", { className: 'form-group' },
+            typeof this.props.label !== 'undefined' ? (React.createElement("label", { htmlFor: '' }, this.props.label)) : '',
+            React.createElement("input", { className: 'form-control', type: this.props.type, name: this.props.name, value: this.props.value, placeholder: this.props.placeholder, onChange: this.props.controlFunc })));
     };
-    return App;
+    return Input;
 }(React.Component));
-exports.App = App;
-ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
-//# sourceMappingURL=index.js.map
+exports.Input = Input;
+//# sourceMappingURL=Input.js.map

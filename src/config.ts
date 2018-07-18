@@ -18,3 +18,21 @@ export const courses: CoursesList = {
     { value: 'sk', name: 'Skincare' },
   ],
 };
+
+export interface IExclusions {
+  [key: string]: {
+    message: string;
+    courses: string[];
+  };
+}
+
+export const exclusions: IExclusions = {
+  MM: {
+    message: 'This course can\'t be taken with Master Makeup Artistry',
+    courses: [ 'MA' ],
+  },
+  MA: {
+    message: 'This course can\'t be taken with Makeup Artistry',
+    courses: [ 'MM' ],
+  },
+};
