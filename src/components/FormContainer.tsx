@@ -6,6 +6,7 @@ import axios, { CancelTokenSource } from 'axios';
 import * as Joi from 'joi';
 import * as qs from 'qs';
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 
 import { RadioGroup } from './HTMLElements/RadioGroup';
 
@@ -158,7 +159,7 @@ export class FormContainer extends React.Component<Props, State> {
     return (
       <form onSubmit={this.handleFormSubmit} noValidate>
 
-        <section className='section' id='courses'><div className='container'>
+        <section className='section' id='courses' ref='coursesSection'><div className='container'>
           <Promotion />
         </div></section>
 
@@ -258,7 +259,26 @@ export class FormContainer extends React.Component<Props, State> {
         </div></section>
 
         <section className='section' id='enroll'><div className='container'>
-          <input type='submit' className='btn' disabled={this.state.disabled} value='Enroll Now' />
+          <div className='row align-items-center'>
+            <div className='col-12 col-md-7 col-lg-7'>
+              <input type='submit' className='btn' disabled={this.state.disabled} value='Enroll Now' />
+              {this.state.formData.courses.length ? null : (
+                <div className='alert alert-primary mt-2' role='alert' onClick={() => {
+                  const coursesSection = ReactDOM.findDOMNode(this.refs.coursesSection);
+                  if (coursesSection !== null && coursesSection) {
+                    window.scrollTo(0, (coursesSection as HTMLElement).offsetTop);
+                  }
+                }}>
+                  Please choose one or more courses before enrolling.
+                </div>
+              )}
+            </div>
+            <div className='col-6 offset-3 col-sm-4 offset-sm-4 col-md-2 offset-md-0 mt-4 mb-2'>
+            </div>
+            <div className='col-12 col-md-3 text-center text-md-left'>
+              <h3 className='h4'>21-Day Money-Back Guarantee</h3>
+            </div>
+          </div>
         </div></section>
 
       </form>
