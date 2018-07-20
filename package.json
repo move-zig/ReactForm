@@ -21,6 +21,7 @@
     "@types/qs": "^6.5.1",
     "@types/react": "^16.4.6",
     "@types/react-dom": "^16.0.6",
+    "@types/react-scroll": "^1.5.3",
     "axios": "^0.18.0",
     "bootstrap": "^4.1.1",
     "formik": "^1.0.1",
@@ -29,6 +30,7 @@
     "jquery": "^3.3.1",
     "qs": "^6.5.2",
     "react": "^16.4.1",
-    "react-dom": "^16.4.1"
+    "react-dom": "^16.4.1",
+    "react-scroll": "^1.7.10"
   }
 }

@@ -7,6 +7,7 @@ import * as Joi from 'joi';
 import * as qs from 'qs';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import { animateScroll } from 'react-scroll';
 
 import { RadioGroup } from './HTMLElements/RadioGroup';
 
@@ -25,6 +26,7 @@ import { PostalCode } from './FormInputs/PostalCode';
 import { Province } from './FormInputs/Province';
 import { TelephoneNumber } from './FormInputs/TelephoneNumber';
 import { Title } from './FormInputs/Title';
+import { PaymentBreakdown } from './PaymentBreakdown';
 
 export interface Props { }
 
@@ -118,7 +120,7 @@ export class FormContainer extends React.Component<Props, State> {
     };
   }
 
-  public async componentDidMount() {
+  public async componentWillMount() {
     try {
       const location = await axios.get('https://api.qccareerschool.com/geoLocation/ip');
       const locationData = location.data;
@@ -184,21 +186,28 @@ export class FormContainer extends React.Component<Props, State> {
 
         <section className='section' id='payment'><div className='container'>
           <h2 className='h1 text-center'>Payment Plan</h2>
-          <RadioGroup
-            setName='paymentPlans'
-            label='Payment Options'
-            options={[
-              { value: 'full', name: 'Pay in Full' },
-              { value: 'accelerated', name: 'Accelerated Installment Plan' },
-              { value: 'part', name: 'Installments Plan' },
-            ]}
-            selectedOption={this.state.formData.paymentPlan}
-            valid={this.state.validationState.paymentPlan}
-            changeFunc={this.handlePaymentPlanChange}
-            wrapperClassName='mb-2'
-            labelClassName='h3'
-            fancy={true}
-          />
+          <div className='row'>
+            <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0 col-lg-4 mb-4 mb-md-0'>
+              <RadioGroup
+                setName='paymentPlans'
+                label='Payment Options'
+                options={[
+                  { value: 'full', name: 'Pay in Full' },
+                  { value: 'accelerated', name: 'Accelerated Installment Plan' },
+                  { value: 'part', name: 'Installments Plan' },
+                ]}
+                selectedOption={this.state.formData.paymentPlan}
+                valid={this.state.validationState.paymentPlan}
+                changeFunc={this.handlePaymentPlanChange}
+                wrapperClassName='mb-2'
+                labelClassName='h3'
+                fancy={true}
+              />
+            </div>
+            <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0 offset-lg-2'>
+              <PaymentBreakdown paymentPlan={this.state.formData.paymentPlan} price={this.state.price} />
+            </div>
+          </div>
         </div></section>
 
         <section className='section' id='shipping'><div className='container'>
@@ -266,7 +275,8 @@ export class FormContainer extends React.Component<Props, State> {
                 <div className='alert alert-primary mt-2' role='alert' onClick={() => {
                   const coursesSection = ReactDOM.findDOMNode(this.refs.coursesSection);
                   if (coursesSection !== null && coursesSection) {
-                    window.scrollTo(0, (coursesSection as HTMLElement).offsetTop);
+                    animateScroll.scrollTo((coursesSection as HTMLElement).offsetTop);
+                    // window.scrollTo(0, (coursesSection as HTMLElement).offsetTop);
                   }
                 }}>
                   Please choose one or more courses before enrolling.
@@ -460,7 +470,7 @@ export class FormContainer extends React.Component<Props, State> {
     const target = event.target;
 
     this.setState((prevState) => {
-      return { formData: { ...prevState.formData, address2: target.value } };
+      return { formData: { ...prevState.formData, city: target.value } };
     }, () => {
       if (this.state.submitAttempted) {
         this.validateCity();
