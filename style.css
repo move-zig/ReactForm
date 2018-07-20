@@ -1,5 +1,6 @@
+body{font-family:'Open Sans',sans-serif!important}
 .section{padding:48px 0}
-.section:nth-of-type(even){background-color:#f0f0f0}
+.section:nth-of-type(even){background-color:#f8f8f8}
 #header,#footer{background-color:black;color:white;padding:24px 0}
 h1,.h1{font-family:'Playfair Display',Helvetica,Arial,sans-serif;font-weight:700;font-size:38pt;line-height:46pt;margin:0 0 32px}
 h3,.h3{font-weight:300;font-size:24px;line-height:28px}

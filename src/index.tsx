@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 
 import { Footer } from './components/Footer';
 import { FormContainer } from './components/FormContainer';
-import { Header } from './components/Header';
+import { Header } from './components/header';
 
 export class App extends React.Component {
   public render() {

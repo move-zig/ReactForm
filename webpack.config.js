@@ -10,7 +10,10 @@ module.exports = {
 
   resolve: {
       // Add '.ts' and '.tsx' as resolvable extensions.
-      extensions: [".ts", ".tsx", ".js", ".json"]
+      extensions: [".ts", ".tsx", ".js", ".json"],
+      alias: {
+        joi: 'joi-browser'
+    }
   },
 
   module: {
@@ -30,5 +33,6 @@ module.exports = {
   externals: {
       "react": "React",
       "react-dom": "ReactDOM"
-  }
+  },
+
 };
