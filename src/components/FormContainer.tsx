@@ -1,7 +1,3 @@
-/**
- *
- */
-
 import axios, { CancelTokenSource } from 'axios';
 import * as Joi from 'joi';
 import * as qs from 'qs';
