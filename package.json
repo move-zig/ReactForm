@@ -11,7 +11,7 @@
   "devDependencies": {
     "awesome-typescript-loader": "^5.2.0",
     "source-map-loader": "^0.2.3",
-    "tslint": "^5.10.0",
+    "tslint": "^5.11.0",
     "typescript": "^2.9.2"
   },
   "dependencies": {
@@ -23,7 +23,7 @@
     "@types/react-dom": "^16.0.6",
     "@types/react-scroll": "^1.5.3",
     "axios": "^0.18.0",
-    "bootstrap": "^4.1.1",
+    "bootstrap": "^4.1.2",
     "formik": "^1.0.1",
     "joi": "^13.4.0",
     "joi-browser": "^13.4.0",
