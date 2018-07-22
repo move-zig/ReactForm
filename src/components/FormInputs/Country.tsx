@@ -1,5 +1,4 @@
 import axios from 'axios';
-import * as Joi from 'joi';
 import * as React from 'react';
 import { Select, SelectOption } from '../HTMLElements/Select';
 

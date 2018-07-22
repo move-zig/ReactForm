@@ -8,7 +8,7 @@ export interface Props {
 export class PaymentBreakdown extends React.Component<Props> {
 
   public render() {
-    if (this.props.price === null) {
+    if (this.props.price === null || this.props.price.numCourses === 0) {
       return null;
     }
     return (

@@ -1,23 +1,20 @@
 import * as React from 'react';
 
+export interface LineItem {
+  description: string;
+  cost: string;
+  discount: boolean;
+  primary: boolean;
+}
+
 export interface Props {
-  lineItems: Array<{ description: string; cost: string; discount: boolean }>;
+  lineItems: LineItem[];
 }
 
 export class Invoice extends React.Component<Props> {
+
   public render() {
-    const lines = this.props.lineItems.map((el, index) => (
-      <tr key={index} className={el.discount ? ' text-primary' : ''}>
-        <td
-          className={'pt-1' + (el.discount ? ' pl-3' : '')}
-          style={{paddingRight: '24px'}}
-        >
-          {el.description}
-        </td>
-        <td className='pt-1 text-right'>{el.cost}</td>
-      </tr>
-    ));
-    return (
+      return (
       <table
         style={
           this.props.lineItems.length ?
@@ -33,9 +30,22 @@ export class Invoice extends React.Component<Props> {
           </tr>
         </thead>
         <tbody>
-          {lines}
+          {this.props.lineItems.filter((el) => el.primary).map(this.renderRow)}
+          {this.props.lineItems.filter((el) => !el.primary).map(this.renderRow)}
         </tbody>
       </table>
     );
   }
+
+  private renderRow = (el: LineItem, index: number) => (
+    <tr key={index} className={el.discount ? ' text-primary' : ''}>
+      <td
+        className={'pt-1' + (el.discount ? ' pl-3' : '')}
+        style={{paddingRight: '24px'}}
+      >
+        {el.description}
+      </td>
+      <td className='pt-1 text-right'>{el.cost}</td>
+    </tr>
+  )
 }

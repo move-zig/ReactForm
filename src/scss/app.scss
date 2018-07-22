@@ -1,7 +1,10 @@
+@import "~bootstrap/scss/bootstrap";
+@import url("https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i|Playfair+Display:400,400i,700,700i");
+
 body{font-family:'Open Sans',sans-serif!important}
 .section{padding:48px 0}
 .section:nth-of-type(even){background-color:#f8f8f8}
-#header,#footer{background-color:black;color:white;padding:24px 0}
+#header,#footer{background-color:#252525;color:white;padding:24px 0}
 h1,.h1{font-family:'Playfair Display',Helvetica,Arial,sans-serif;font-weight:700;font-size:38pt;line-height:46pt;margin:0 0 32px}
 h3,.h3{font-weight:300;font-size:24px;line-height:28px}
 h4,.h4{font-weight:300;font-size:20px;line-height:24px}

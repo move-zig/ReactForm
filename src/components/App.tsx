@@ -10,7 +10,7 @@ import { Header } from './header';
 
 import { RadioGroup } from './HTMLElements/RadioGroup';
 
-import { Invoice } from './Invoice';
+import { Invoice, LineItem } from './Invoice';
 import { Promotion } from './Promotion';
 
 import { AddressLine1 } from './FormInputs/AddressLine1';
@@ -140,17 +140,23 @@ export class App extends React.Component<Props, State> {
 
   public render(): JSX.Element {
 
-    const invoiceItems = [];
+    const invoiceItems: LineItem[] = [];
     if (this.state.price !== null && typeof this.state.price.courses !== 'undefined') {
       for (const courseCode in this.state.price.courses) {
         if (this.state.price.courses.hasOwnProperty(courseCode)) {
           const course = this.state.price.courses[courseCode];
-          invoiceItems.push({ description: course.name, cost: this.state.price.currency.symbol + course.baseCost, discount: false });
+          invoiceItems.push({
+            description: course.name,
+            cost: this.state.price.currency.symbol + course.baseCost,
+            discount: false,
+            primary: course.primary,
+          });
           if (course.secondaryDiscountAmount) {
             invoiceItems.push({
               description: (course.secondaryDiscount * 100).toFixed(0) + '% discount',
               cost: '-' + this.state.price.currency.symbol + course.secondaryDiscountAmount,
               discount: true,
+              primary: false,
             });
           }
         }
@@ -287,6 +293,7 @@ export class App extends React.Component<Props, State> {
                 )}
               </div>
               <div className='col-6 offset-3 col-sm-4 offset-sm-4 col-md-2 offset-md-0 mt-4 mb-2'>
+                <img src='images/money-back-guarantee.png' className='img-fluid' alt='21-day money-back guarantee' />
               </div>
               <div className='col-12 col-md-3 text-center text-md-left'>
                 <h3 className='h4'>21-Day Money-Back Guarantee</h3>

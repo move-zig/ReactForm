@@ -1,4 +1,3 @@
-import * as Joi from 'joi';
 import * as React from 'react';
 import { Select } from '../HTMLElements/Select';
 
