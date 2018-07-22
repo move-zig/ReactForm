@@ -1,20 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import { Footer } from './components/Footer';
-import { FormContainer } from './components/FormContainer';
-import { Header } from './components/header';
-
-export class App extends React.Component {
-  public render() {
-    return (
-      <div>
-        <Header />
-        <FormContainer />
-        <Footer />
-      </div>
-    );
-  }
-}
+import { App } from './components/App';
 
 ReactDOM.render(<App />, document.getElementById('root'));

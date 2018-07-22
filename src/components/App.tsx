@@ -5,6 +5,9 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { animateScroll } from 'react-scroll';
 
+import { Footer } from './Footer';
+import { Header } from './header';
+
 import { RadioGroup } from './HTMLElements/RadioGroup';
 
 import { Invoice } from './Invoice';
@@ -24,7 +27,7 @@ import { TelephoneNumber } from './FormInputs/TelephoneNumber';
 import { Title } from './FormInputs/Title';
 import { PaymentBreakdown } from './PaymentBreakdown';
 
-export interface Props { }
+export interface Props {}
 
 export type ValidationState = boolean | string;
 
@@ -71,7 +74,7 @@ export interface SelectOption {
   value: string;
 }
 
-export class FormContainer extends React.Component<Props, State> {
+export class App extends React.Component<Props, State> {
 
   private source?: CancelTokenSource;
 
@@ -135,7 +138,7 @@ export class FormContainer extends React.Component<Props, State> {
     }
   }
 
-  public render() {
+  public render(): JSX.Element {
 
     const invoiceItems = [];
     if (this.state.price !== null && typeof this.state.price.courses !== 'undefined') {
@@ -155,139 +158,147 @@ export class FormContainer extends React.Component<Props, State> {
     }
 
     return (
-      <form onSubmit={this.handleFormSubmit} noValidate>
+      <div>
 
-        <section className='section' id='courses' ref='coursesSection'><div className='container'>
-          <Promotion />
-        </div></section>
+        <Header countryCode={this.state.formData.countryCode} />
 
-        <section className='section' id='courses'><div className='container'>
-          <h2 className='h1 text-center'>Choose Your Courses</h2>
-          <h3 className='mb-4 text-center'>
-            Enroll in more than one course and get <strong>50% OFF</strong> each additional course!
+        <form onSubmit={this.handleFormSubmit} noValidate>
+
+          <section className='section' id='courses' ref='coursesSection'><div className='container'>
+            <Promotion />
+          </div></section>
+
+          <section className='section' id='courses'><div className='container'>
+            <h2 className='h1 text-center'>Choose Your Courses</h2>
+            <h3 className='mb-4 text-center'>
+              Enroll in more than one course and get <strong>50% OFF</strong> each additional course!
           </h3>
-          <div className='row'>
-            <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0 mb-4 mb-md-0'>
-              <Courses
-                selectedOptions={this.state.formData.courses}
-                valid={this.state.validationState.courses}
-                changeFunc={this.handleCourseChange}
-              />
+            <div className='row'>
+              <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0 mb-4 mb-md-0'>
+                <Courses
+                  selectedOptions={this.state.formData.courses}
+                  valid={this.state.validationState.courses}
+                  changeFunc={this.handleCourseChange}
+                />
+              </div>
+              <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0'>
+                <Invoice lineItems={invoiceItems} />
+              </div>
             </div>
-            <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0'>
-              <Invoice lineItems={invoiceItems} />
-            </div>
-          </div>
-        </div></section>
+          </div></section>
 
-        <section className='section' id='payment'><div className='container'>
-          <h2 className='h1 text-center'>Payment Plan</h2>
-          <div className='row'>
-            <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0 col-lg-4 mb-4 mb-md-0'>
-              <RadioGroup
-                setName='paymentPlans'
-                label='Payment Options'
-                options={[
-                  { value: 'full', name: 'Pay in Full' },
-                  { value: 'accelerated', name: 'Accelerated Installment Plan' },
-                  { value: 'part', name: 'Installments Plan' },
-                ]}
-                selectedOption={this.state.formData.paymentPlan}
-                valid={this.state.validationState.paymentPlan}
-                changeFunc={this.handlePaymentPlanChange}
-                wrapperClassName='mb-2'
-                labelClassName='h3'
-                fancy={true}
-              />
+          <section className='section' id='payment'><div className='container'>
+            <h2 className='h1 text-center'>Payment Plan</h2>
+            <div className='row'>
+              <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0 col-lg-4 mb-4 mb-md-0'>
+                <RadioGroup
+                  setName='paymentPlans'
+                  label='Payment Options'
+                  options={[
+                    { value: 'full', name: 'Pay in Full' },
+                    { value: 'accelerated', name: 'Accelerated Installment Plan' },
+                    { value: 'part', name: 'Installments Plan' },
+                  ]}
+                  selectedOption={this.state.formData.paymentPlan}
+                  valid={this.state.validationState.paymentPlan}
+                  changeFunc={this.handlePaymentPlanChange}
+                  wrapperClassName='mb-2'
+                  labelClassName='h3'
+                  fancy={true}
+                />
+              </div>
+              <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0 offset-lg-2'>
+                <PaymentBreakdown paymentPlan={this.state.formData.paymentPlan} price={this.state.price} />
+              </div>
             </div>
-            <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0 offset-lg-2'>
-              <PaymentBreakdown paymentPlan={this.state.formData.paymentPlan} price={this.state.price} />
-            </div>
-          </div>
-        </div></section>
+          </div></section>
 
-        <section className='section' id='shipping'><div className='container'>
-          <h2 className='h1 text-center'>Shipping Information</h2>
-          <div className='row'>
-            <div className='col-12 col-md-6 col-lg-4 offset-lg-2'>
-              <Title
-                value={this.state.formData.title}
-                valid={this.state.validationState.title}
-                changeFunc={this.handleTitleChange}
-              />
-              <FirstName
-                value={this.state.formData.firstName}
-                valid={this.state.validationState.firstName}
-                changeFunc={this.handleFirstNameChange}
-              />
-              <LastName
-                value={this.state.formData.lastName}
-                valid={this.state.validationState.lastName}
-                changeFunc={this.handleLastNameChange}
-              />
-              <EmailAddress
-                value={this.state.formData.emailAddress}
-                valid={this.state.validationState.emailAddress}
-                changeFunc={this.handleEmailAddressChange}
-              />
-              <TelephoneNumber
-                value={this.state.formData.telephoneNumber}
-                valid={this.state.validationState.telephoneNumber}
-                changeFunc={this.handleTelephoneNumberChange}
-              />
+          <section className='section' id='shipping'><div className='container'>
+            <h2 className='h1 text-center'>Shipping Information</h2>
+            <div className='row'>
+              <div className='col-12 col-md-6 col-lg-4 offset-lg-2'>
+                <Title
+                  value={this.state.formData.title}
+                  valid={this.state.validationState.title}
+                  changeFunc={this.handleTitleChange}
+                />
+                <FirstName
+                  value={this.state.formData.firstName}
+                  valid={this.state.validationState.firstName}
+                  changeFunc={this.handleFirstNameChange}
+                />
+                <LastName
+                  value={this.state.formData.lastName}
+                  valid={this.state.validationState.lastName}
+                  changeFunc={this.handleLastNameChange}
+                />
+                <EmailAddress
+                  value={this.state.formData.emailAddress}
+                  valid={this.state.validationState.emailAddress}
+                  changeFunc={this.handleEmailAddressChange}
+                />
+                <TelephoneNumber
+                  value={this.state.formData.telephoneNumber}
+                  valid={this.state.validationState.telephoneNumber}
+                  changeFunc={this.handleTelephoneNumberChange}
+                />
+              </div>
+              <div className='col-12 col-md-6 col-lg-4'>
+                <Country
+                  value={this.state.formData.countryCode}
+                  valid={this.state.validationState.countryCode}
+                  changeFunc={this.handleCountryCodeChange}
+                />
+                <AddressLine1
+                  value={this.state.formData.address1}
+                  valid={this.state.validationState.address1}
+                  changeFunc={this.handleAddress1Change}
+                />
+                <AddressLine2
+                  value={this.state.formData.address2}
+                  valid={this.state.validationState.address2}
+                  changeFunc={this.handleAddress2Change}
+                />
+                <City
+                  countryCode={this.state.formData.countryCode}
+                  value={this.state.formData.city}
+                  valid={this.state.validationState.city}
+                  changeFunc={this.handleCityChange}
+                />
+                {this.createProvincePostalElement()}
+              </div>
             </div>
-            <div className='col-12 col-md-6 col-lg-4'>
-              <Country
-                value={this.state.formData.countryCode}
-                valid={this.state.validationState.countryCode}
-                changeFunc={this.handleCountryCodeChange}
-              />
-              <AddressLine1
-                value={this.state.formData.address1}
-                valid={this.state.validationState.address1}
-                changeFunc={this.handleAddress1Change}
-              />
-              <AddressLine2
-                value={this.state.formData.address2}
-                valid={this.state.validationState.address2}
-                changeFunc={this.handleAddress2Change}
-              />
-              <City
-                countryCode={this.state.formData.countryCode}
-                value={this.state.formData.city}
-                valid={this.state.validationState.city}
-                changeFunc={this.handleCityChange}
-              />
-              {this.createProvincePostalElement()}
-            </div>
-          </div>
-        </div></section>
+          </div></section>
 
-        <section className='section' id='enroll'><div className='container'>
-          <div className='row align-items-center'>
-            <div className='col-12 col-md-7 col-lg-7'>
-              <input type='submit' className='btn' disabled={this.state.disabled} value='Enroll Now' />
-              {this.state.formData.courses.length ? null : (
-                <div className='alert alert-primary mt-2' role='alert' onClick={() => {
-                  const coursesSection = ReactDOM.findDOMNode(this.refs.coursesSection);
-                  if (coursesSection !== null && coursesSection) {
-                    animateScroll.scrollTo((coursesSection as HTMLElement).offsetTop);
-                    // window.scrollTo(0, (coursesSection as HTMLElement).offsetTop);
-                  }
-                }}>
-                  Please choose one or more courses before enrolling.
+          <section className='section' id='enroll'><div className='container'>
+            <div className='row align-items-center'>
+              <div className='col-12 col-md-7 col-lg-7'>
+                <input type='submit' className='btn' disabled={this.state.disabled} value='Enroll Now' />
+                {this.state.formData.courses.length ? null : (
+                  <div className='alert alert-primary mt-2' role='alert' onClick={() => {
+                    const coursesSection = ReactDOM.findDOMNode(this.refs.coursesSection);
+                    if (coursesSection !== null && coursesSection) {
+                      animateScroll.scrollTo((coursesSection as HTMLElement).offsetTop);
+                      // window.scrollTo(0, (coursesSection as HTMLElement).offsetTop);
+                    }
+                  }}>
+                    Please choose one or more courses before enrolling.
                 </div>
-              )}
+                )}
+              </div>
+              <div className='col-6 offset-3 col-sm-4 offset-sm-4 col-md-2 offset-md-0 mt-4 mb-2'>
+              </div>
+              <div className='col-12 col-md-3 text-center text-md-left'>
+                <h3 className='h4'>21-Day Money-Back Guarantee</h3>
+              </div>
             </div>
-            <div className='col-6 offset-3 col-sm-4 offset-sm-4 col-md-2 offset-md-0 mt-4 mb-2'>
-            </div>
-            <div className='col-12 col-md-3 text-center text-md-left'>
-              <h3 className='h4'>21-Day Money-Back Guarantee</h3>
-            </div>
-          </div>
-        </div></section>
+          </div></section>
 
-      </form>
+        </form>
+
+        <Footer />
+
+      </div>
     );
   }
 
