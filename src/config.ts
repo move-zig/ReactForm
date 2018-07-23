@@ -44,9 +44,24 @@ export interface IExclusions {
 }
 
 export const mutualExclusionSets = [
-  { courses: [ 'mm', 'ma' ], description: 'Makeup Artistry is included in Master Makeup Artistry' },
-  { courses: [ 'i2', 'st', 'rd' ], description: 'Interior Decorating, Home Staging and Redesign, and Interior Redesign have overlapping material' },
-  { courses: [ 'i2', 'mi' ], description: 'Core Interior Decorating is included in Interior Decorating' },
-  { courses: [ 'st', 'ms' ], description: 'Staging for Designers is included in Home Staging' },
-  { courses: [ 'ep', 'wp', 'ce' ], description: 'Event & Wedding Planning, Wedding Planning, and Event Planning have overlapping material' },
+  {
+    courses: [ 'mm', 'ma' ],
+    description: 'Makeup Artistry is included in Master Makeup Artistry',
+  },
+  {
+    courses: [ 'i2', 'st', 'rd' ],
+    description: 'Interior Decorating, Home Staging and Redesign, and Interior Redesign have overlapping material',
+  },
+  {
+    courses: [ 'i2', 'mi' ],
+    description: 'Core Interior Decorating is included in Interior Decorating',
+  },
+  {
+    courses: [ 'st', 'ms' ],
+    description: 'Staging for Designers is included in Home Staging',
+  },
+  {
+    courses: [ 'ep', 'wp', 'ce' ],
+    description: 'Event & Wedding Planning, Wedding Planning, and Event Planning have overlapping material',
+  },
 ];

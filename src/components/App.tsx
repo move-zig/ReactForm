@@ -1,6 +1,6 @@
 import axios, { CancelTokenSource } from 'axios';
 import * as Joi from 'joi';
-import * as qs from 'qs';
+import qs from 'qs';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { animateScroll } from 'react-scroll';
@@ -10,9 +10,8 @@ import * as config from '../config';
 import { Footer } from './Footer';
 import { Header } from './header';
 
-import { RadioGroup } from './HTMLElements/RadioGroup';
-
-import { Invoice, LineItem } from './Invoice';
+import { Invoice } from './Invoice';
+import { PaymentBreakdown } from './PaymentBreakdown';
 import { Promotion } from './Promotion';
 
 import { AddressLine1 } from './FormInputs/AddressLine1';
@@ -29,9 +28,8 @@ import { PostalCode } from './FormInputs/PostalCode';
 import { Province } from './FormInputs/Province';
 import { TelephoneNumber } from './FormInputs/TelephoneNumber';
 import { Title } from './FormInputs/Title';
-import { PaymentBreakdown } from './PaymentBreakdown';
 
-export interface Props { }
+export interface Props {}
 
 export type ValidationState = boolean | string;
 
@@ -48,7 +46,7 @@ export interface State {
     address2: string;
     city: string;
     provinceCode: string | null;
-    postalCode: string;
+    postalCode: string | null;
     countryCode: string;
     paymentPlan: string;
     paymentDay: number | null;
@@ -74,11 +72,6 @@ export interface State {
   price: any;
 }
 
-export interface SelectOption {
-  name: string;
-  value: string;
-}
-
 export class App extends React.Component<Props, State> {
 
   private source?: CancelTokenSource;
@@ -98,7 +91,7 @@ export class App extends React.Component<Props, State> {
         address2: '',
         city: '',
         provinceCode: null,
-        postalCode: '',
+        postalCode: null,
         countryCode: '',
         paymentPlan: 'full',
         paymentDay: null,
@@ -148,6 +141,11 @@ export class App extends React.Component<Props, State> {
         };
       });
     }
+  }
+
+  public test(x: any) {
+    const name = x.value as keyof State['formData'];
+
   }
 
   public render(): JSX.Element {
@@ -441,7 +439,11 @@ export class App extends React.Component<Props, State> {
 
     // set the new state
     this.setState((prevState) => {
-      return { formData: { ...prevState.formData, countryCode: value, provinceCode: null } };
+      if (this.needPostal(value)) {
+        return { formData: { ...prevState.formData, countryCode: value, provinceCode: null } };
+      } else {
+        return { formData: { ...prevState.formData, countryCode: value, provinceCode: null, postalCode: null } };
+      }
     }, () => {
 
       // fetch the new prices
@@ -564,8 +566,12 @@ export class App extends React.Component<Props, State> {
     valid = await this.validateAddress1() && valid;
     valid = await this.validateAddress2() && valid;
     valid = await this.validateCity() && valid;
-    valid = await this.validateProvinceCode() && valid;
-    valid = await this.validatePostalCode() && valid;
+    if (this.needsProvince(this.state.formData.countryCode)) {
+      valid = await this.validateProvinceCode() && valid;
+    }
+    if (this.needPostal(this.state.formData.countryCode)) {
+      valid = await this.validatePostalCode() && valid;
+    }
     valid = await this.validateCountryCode() && valid;
     return valid;
   }
@@ -812,7 +818,7 @@ export class App extends React.Component<Props, State> {
    * @return Promise<boolean>
    */
   private async validatePostalCode(): Promise<boolean> {
-    const MAX_LENGTH = 10;
+    const MAX_LENGTH = 12;
     const schemaExists = Joi
       .string()
       .error(new Error('Please enter a postal/zip code.'));
@@ -820,21 +826,14 @@ export class App extends React.Component<Props, State> {
       .string()
       .max(MAX_LENGTH)
       .error(new Error(`Max ${MAX_LENGTH} characters`));
-    let schemaPattern = Joi.string();
-    if (this.state.formData.countryCode === 'CA') {
-      schemaPattern = schemaPattern.regex(/^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ ]?\d[ABCEGHJ-NPRSTV-Z]\d$/i).error(new Error('Please provide a valid postal code.'));
-    } else if (this.state.formData.countryCode === 'US') {
-      schemaPattern = schemaPattern.regex(/^\d{5}([ \-]\d{4})?$/).error(new Error('Please provide a valid zip code.'));
-    } else if (this.state.formData.countryCode === 'AU' || this.state.formData.countryCode === 'NZ') {
-      schemaPattern = schemaPattern.regex(/^\d{4}$/).error(new Error('Please provide a valid postcode.'));
-    } else if (this.state.formData.countryCode === 'GB') {
-      // tslint:disable-next-line:max-line-length
-      schemaPattern = schemaPattern.regex(/^(GIR 0AA)|((([A-Z]\d{1,2})|(([A-Z][A-HJ-Y]\d{1,2})|(([A-Z]\d[A-Z])|([A-Z][A-HJ-Y]\d?[A-Z])))) \d[A-Z]{2})$/i).error(new Error('Please provide a valid postcode.'));
-    }
     try {
       await Joi.validate(this.state.formData.postalCode, schemaExists);
       await Joi.validate(this.state.formData.postalCode, schemaMaxLength);
-      await Joi.validate(this.state.formData.postalCode, schemaPattern);
+      const pattern = this.postalPattern(this.state.formData.countryCode);
+      if (pattern !== null) {
+        const schemaPattern = Joi.string().regex(pattern).error(new Error('Please enter a valid code.'));
+        await Joi.validate(this.state.formData.postalCode, schemaPattern);
+      }
       this.setState((prevState) => ({ validationState: { ...prevState.validationState, postalCode: true } }));
       return true;
     } catch (err) {
@@ -843,24 +842,49 @@ export class App extends React.Component<Props, State> {
     }
   }
 
-  private needsProvince(): boolean {
-    const countries = [ 'CA', 'US', 'AU' ];
-    return countries.indexOf(this.state.formData.countryCode) > -1;
+  private postalPattern(countryCode: string): RegExp | null {
+    if (countryCode === 'CA') {
+      return /^[ABCEGHJ-NPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][ ]?\d[ABCEGHJ-NPRSTV-Z]\d$/i;
+    }
+    if (countryCode === 'US') {
+      return /^\d{5}(?:[-]\d{4}(?:\d{2})?)?$/;
+    }
+    if (countryCode === 'AU' || countryCode === 'NZ') {
+      return /^\d{4}$/;
+    }
+    if (countryCode === 'GB') {
+      return /^(GIR 0AA)|((([A-Z]\d{1,2})|(([A-Z][A-HJ-Y]\d{1,2})|(([A-Z]\d[A-Z])|([A-Z][A-HJ-Y]\d?[A-Z])))) \d[A-Z]{2})$/i;
+    }
+    if (countryCode === 'MX') {
+      return /^\d{5}$/;
+    }
+    if (countryCode === 'NL') {
+      return /^\d{4}[ ]?[A-Z]{2}$/i;
+    }
+    if (countryCode === 'DE') {
+      return /^(?!01000|99999)(0[1-9]\d{3}|[1-9]\d{4})$/;
+    }
+    return null;
   }
 
-  private needPostal(): boolean {
+  private needsProvince(countryCode: string): boolean {
+    const countries = [ 'CA', 'US', 'AU' ];
+    return countries.indexOf(countryCode) > -1;
+  }
+
+  private needPostal(countryCode: string): boolean {
     const countries = [ 'AO', 'AG', 'AW', 'BS', 'BZ', 'BJ', 'BW', 'BF', 'BI', 'CM', 'TD', 'KM', 'CD', 'CG', 'CK', 'CW',
       'DJ', 'DM', 'GQ', 'ER', 'FJ', 'GA', 'GM', 'GH', 'GD', 'GY', 'HM', 'HK', 'CI', 'JM', 'KI', 'LY', 'MO', 'MW', 'ML',
       'MR', 'MS', 'NA', 'NR', 'NU', 'KP', 'PA', 'QA', 'RE', 'RW', 'KN', 'LC', 'WS', 'ST', 'SC', 'SL', 'MF', 'SB', 'GS',
       'SR', 'SY', 'TZ', 'TG', 'TK', 'TO', 'TT', 'TV', 'UG', 'AE', 'VU', 'YE', 'ZW' ];
-    return countries.indexOf(this.state.formData.countryCode) === -1;
+    return countries.indexOf(countryCode) === -1;
   }
 
   private createProvincePostalElement(): JSX.Element | null {
 
     // create the province input
     let provinceSelect;
-    if (this.needsProvince()) {
+    if (this.needsProvince(this.state.formData.countryCode)) {
       provinceSelect = (
         <Province
           countryCode={this.state.formData.countryCode}
@@ -876,7 +900,7 @@ export class App extends React.Component<Props, State> {
 
     // create the postal code input
     let postalInput;
-    if (this.needPostal()) {
+    if (this.needPostal(this.state.formData.countryCode)) {
       postalInput = (
         <PostalCode
           countryCode={this.state.formData.countryCode}

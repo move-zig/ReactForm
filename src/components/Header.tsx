@@ -1,3 +1,13 @@
+/**
+ * Note:
+ * Use
+ * import faPhone from '@fortawesome/free-solid-svg-icons/faPhone';
+ * rather than
+ * import { faPhone } from '@fortawesome/free-solid-svg-icons'
+ * The second form casuses webpack to include all the icons and adds over 200 kb to the bundle size.
+ */
+import faPhone from '@fortawesome/free-solid-svg-icons/faPhone';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as React from 'react';
 
 export interface Props {
@@ -16,7 +26,7 @@ export class Header extends React.Component<Props> {
             </div>
             <div className='col-3 d-block d-sm-none text-right'>
               <a id='phone-link' href={'tel:' + this.phoneNumber()}>
-                <i id='phone-icon' className='fas fa-phone' style={{ fontSize: '30px' }}></i>
+                <FontAwesomeIcon icon={faPhone} style={{ fontSize: '30px' }} />
               </a>
             </div>
           </div>
