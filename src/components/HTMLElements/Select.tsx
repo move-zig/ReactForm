@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-export interface SelectOption { name: string; value: string; }
+export interface Option { name: string; value: string; }
 
 export interface Props {
-  label?: string;
-  opts: SelectOption[];
+  label?: string | JSX.Element;
+  opts: Option[];
   name: string;
   id: string;
   value: string | null;
@@ -76,9 +76,9 @@ export class Select extends React.Component<Props> {
     if (this.props.valid === false) {
       return null;
     } else if (this.props.valid === true) {
-      return <small className='form-text text-success'>Looks good!</small>;
+      return <small className='form-text text-success'>✓</small>;
     } else {
-      return <small className='form-text text-danger'>{this.props.valid}</small>;
+      return <small className='form-text text-danger'>✖ {this.props.valid}</small>;
     }
   }
 

@@ -6,6 +6,7 @@ import * as config from '../../config';
 
 export interface Props {
   selectedOptions: string[];
+  disabledOptions?: string[];
   valid: boolean | string;
   changeFunc: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -19,6 +20,7 @@ export class Courses extends React.Component<Props> {
         setName='courses'
         options={config.courses[courseGroup]}
         selectedOptions={this.props.selectedOptions}
+        disabledOptions={this.props.disabledOptions}
         valid={this.props.valid}
         changeFunc={this.props.changeFunc}
         wrapperClassName='mb-2'

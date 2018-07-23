@@ -1,9 +1,14 @@
 import * as React from 'react';
 
+export interface Option {
+  name: string | JSX.Element;
+  value: string;
+}
+
 export interface Props {
-  label?: string;
+  label?: string | JSX.Element;
   setName: string;
-  options: Array<{ name: string; value: string; }>;
+  options: Option[];
   selectedOption: string;
   valid: boolean | string;
   changeFunc: (event: React.ChangeEvent<any>) => void;
@@ -33,8 +38,8 @@ export class RadioGroup extends React.Component<Props> {
       wrapperClassName += ' ' + this.props.wrapperClassName;
     }
 
-    const inputs = this.props.options.map((opt) => (
-      <div className={wrapperClassName} key={opt.value}>
+    const inputs = this.props.options.map((opt, index) => (
+      <div className={wrapperClassName} key={index}>
         <input
           type='radio'
           className={inputClassName}
@@ -63,9 +68,9 @@ export class RadioGroup extends React.Component<Props> {
     if (this.props.valid === false) {
       return null;
     } else if (this.props.valid === true) {
-      return <small className='form-text text-success'>Looks good!</small>;
+      return <small className='form-text text-success'>✓</small>;
     } else {
-      return <small className='form-text text-danger'>{this.props.valid}</small>;
+      return <small className='form-text text-danger'>✖ {this.props.valid}</small>;
     }
   }
 

@@ -27,7 +27,7 @@ export class PaymentBreakdown extends React.Component<Props> {
     } else if (this.props.paymentPlan === 'part') {
       return 'Installment Plan';
     } else if (this.props.paymentPlan === 'accelerated') {
-      return 'Accelerated Plan';
+      return 'Accelerated Installment Plan';
     } else {
       throw new Error('invalid payment plan');
     }
@@ -71,6 +71,26 @@ export class PaymentBreakdown extends React.Component<Props> {
   private renderBodyPart() {
     return (
       <tbody>
+        <tr>
+          <td className='text-left pt-0 pb-2'>Initial Desposit:</td>
+          <td className='text-right pt-0 pb-2 pl-4'>{this.props.price.currency.symbol}{this.props.price.deposit.part}</td>
+        </tr>
+        <tr>
+          <td className='text-left pt-0 pb-2'>Number of Installments:</td>
+          <td className='text-right pt-0 pb-2 pl-4'>{this.props.price.installments.part}</td>
+        </tr>
+        <tr>
+          <td className='text-left pt-0 pb-2'>Monthly Installment:</td>
+          <td className='text-right pt-0 pb-2 pl-4'>{this.props.price.currency.symbol}{this.props.price.installmentSize.part}</td>
+        </tr>
+        <tr>
+          <td className='text-left pt-0 pb-2'><strong>Total:</strong></td>
+          <td className='text-right pt-0 pb-2 pl-4'>
+            <strong>
+              {this.props.price.currency.symbol}{this.props.price.cost - this.props.price.secondaryDiscount - this.props.price.discount.part}
+            </strong>
+          </td>
+        </tr>
       </tbody>
     );
   }
@@ -78,6 +98,26 @@ export class PaymentBreakdown extends React.Component<Props> {
   private renderBodyAccelerated() {
     return (
       <tbody>
+        <tr>
+          <td className='text-left pt-0 pb-2'>Initial Desposit:</td>
+          <td className='text-right pt-0 pb-2 pl-4'>{this.props.price.currency.symbol}{this.props.price.deposit.accelerated}</td>
+        </tr>
+        <tr>
+          <td className='text-left pt-0 pb-2'>Number of Installments:</td>
+          <td className='text-right pt-0 pb-2 pl-4'>{this.props.price.installments.accelerated}</td>
+        </tr>
+        <tr>
+          <td className='text-left pt-0 pb-2'>Monthly Installment:</td>
+          <td className='text-right pt-0 pb-2 pl-4'>{this.props.price.currency.symbol}{this.props.price.installmentSize.accelerated}</td>
+        </tr>
+        <tr>
+          <td className='text-left pt-0 pb-2'><strong>Total:</strong></td>
+          <td className='text-right pt-0 pb-2 pl-4'>
+            <strong>
+              {this.props.price.currency.symbol}{this.props.price.cost - this.props.price.secondaryDiscount - this.props.price.discount.accelerated}
+            </strong>
+          </td>
+        </tr>
       </tbody>
     );
   }

@@ -1,8 +1,8 @@
 import * as React from 'react';
 
 export interface Props {
-  type: 'text' | 'number' | 'email';
-  label?: string;
+  type: 'text' | 'number' | 'email' | 'tel';
+  label?: string | JSX.Element;
   name: string;
   id: string;
   value: string;
@@ -56,9 +56,9 @@ export class Input extends React.Component<Props> {
     if (this.props.valid === false) {
       return null;
     } else if (this.props.valid === true) {
-      return <small className='form-text text-success'>Looks good!</small>;
+      return <small className='form-text text-success'>✓</small>;
     } else {
-      return <small className='form-text text-danger'>{this.props.valid}</small>;
+      return <small className='form-text text-danger'>✖ {this.props.valid}</small>;
     }
   }
 

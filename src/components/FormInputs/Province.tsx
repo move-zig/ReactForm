@@ -1,6 +1,6 @@
 import axios, { CancelTokenSource } from 'axios';
 import * as React from 'react';
-import { Select, SelectOption } from '../HTMLElements/Select';
+import { Option, Select } from '../HTMLElements/Select';
 
 export interface Props {
   countryCode: string;
@@ -10,7 +10,7 @@ export interface Props {
 }
 
 export interface State {
-  opts: SelectOption[];
+  opts: Option[];
 }
 
 export class Province extends React.Component<Props, State> {

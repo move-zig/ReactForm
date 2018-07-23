@@ -5,6 +5,8 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { animateScroll } from 'react-scroll';
 
+import * as config from '../config';
+
 import { Footer } from './Footer';
 import { Header } from './header';
 
@@ -21,13 +23,15 @@ import { Courses } from './FormInputs/Courses';
 import { EmailAddress } from './FormInputs/EmailAddress';
 import { FirstName } from './FormInputs/FirstName';
 import { LastName } from './FormInputs/LastName';
+import { PaymentDate } from './FormInputs/PaymentDate';
+import { PaymentPlan } from './FormInputs/PaymentPlan';
 import { PostalCode } from './FormInputs/PostalCode';
 import { Province } from './FormInputs/Province';
 import { TelephoneNumber } from './FormInputs/TelephoneNumber';
 import { Title } from './FormInputs/Title';
 import { PaymentBreakdown } from './PaymentBreakdown';
 
-export interface Props {}
+export interface Props { }
 
 export type ValidationState = boolean | string;
 
@@ -65,6 +69,7 @@ export interface State {
     paymentPlan: ValidationState
     paymentDay: ValidationState
   };
+  disabledCourses: string[];
   submitAttempted: boolean;
   price: any;
 }
@@ -114,6 +119,7 @@ export class App extends React.Component<Props, State> {
         paymentPlan: false,
         paymentDay: false,
       },
+      disabledCourses: [],
       submitAttempted: false,
       price: null,
     };
@@ -122,46 +128,29 @@ export class App extends React.Component<Props, State> {
   public async componentWillMount() {
     try {
       const location = await axios.get('https://api.qccareerschool.com/geoLocation/ip');
-      const locationData = location.data;
-
       this.setState((prevState) => {
         return {
           formData: {
             ...prevState.formData,
-            countryCode: locationData.countryCode,
-            provinceCode: locationData.provinceCode,
+            countryCode: location.data.countryCode,
+            provinceCode: location.data.provinceCode,
           },
         };
       });
     } catch (err) {
-      alert('failed to load location data');
+      this.setState((prevState) => {
+        return {
+          formData: {
+            ...prevState.formData,
+            countryCode: 'US',
+            provinceCode: null,
+          },
+        };
+      });
     }
   }
 
   public render(): JSX.Element {
-
-    const invoiceItems: LineItem[] = [];
-    if (this.state.price !== null && typeof this.state.price.courses !== 'undefined') {
-      for (const courseCode in this.state.price.courses) {
-        if (this.state.price.courses.hasOwnProperty(courseCode)) {
-          const course = this.state.price.courses[courseCode];
-          invoiceItems.push({
-            description: course.name,
-            cost: this.state.price.currency.symbol + course.baseCost,
-            discount: false,
-            primary: course.primary,
-          });
-          if (course.secondaryDiscountAmount) {
-            invoiceItems.push({
-              description: (course.secondaryDiscount * 100).toFixed(0) + '% discount',
-              cost: '-' + this.state.price.currency.symbol + course.secondaryDiscountAmount,
-              discount: true,
-              primary: false,
-            });
-          }
-        }
-      }
-    }
 
     return (
       <div>
@@ -183,12 +172,13 @@ export class App extends React.Component<Props, State> {
               <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0 mb-4 mb-md-0'>
                 <Courses
                   selectedOptions={this.state.formData.courses}
+                  disabledOptions={this.state.disabledCourses}
                   valid={this.state.validationState.courses}
                   changeFunc={this.handleCourseChange}
                 />
               </div>
               <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0'>
-                <Invoice lineItems={invoiceItems} />
+                <Invoice price={this.state.price} />
               </div>
             </div>
           </div></section>
@@ -197,21 +187,12 @@ export class App extends React.Component<Props, State> {
             <h2 className='h1 text-center'>Payment Plan</h2>
             <div className='row'>
               <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0 col-lg-4 mb-4 mb-md-0'>
-                <RadioGroup
-                  setName='paymentPlans'
-                  label='Payment Options'
-                  options={[
-                    { value: 'full', name: 'Pay in Full' },
-                    { value: 'accelerated', name: 'Accelerated Installment Plan' },
-                    { value: 'part', name: 'Installments Plan' },
-                  ]}
+                <PaymentPlan
                   selectedOption={this.state.formData.paymentPlan}
                   valid={this.state.validationState.paymentPlan}
                   changeFunc={this.handlePaymentPlanChange}
-                  wrapperClassName='mb-2'
-                  labelClassName='h3'
-                  fancy={true}
                 />
+                <PaymentDate />
               </div>
               <div className='col-12 col-sm-8 offset-sm-2 col-md-6 offset-md-0 offset-lg-2'>
                 <PaymentBreakdown paymentPlan={this.state.formData.paymentPlan} price={this.state.price} />
@@ -281,7 +262,7 @@ export class App extends React.Component<Props, State> {
               <div className='col-12 col-md-7 col-lg-7'>
                 <input type='submit' className='btn' disabled={this.state.disabled} value='Enroll Now' />
                 {this.state.formData.courses.length ? null : (
-                  <div className='alert alert-primary mt-2' role='alert' onClick={() => {
+                  <div className='alert alert-info mt-2' role='alert' onClick={() => {
                     const coursesSection = ReactDOM.findDOMNode(this.refs.coursesSection);
                     if (coursesSection !== null && coursesSection) {
                       animateScroll.scrollTo((coursesSection as HTMLElement).offsetTop);
@@ -330,13 +311,46 @@ export class App extends React.Component<Props, State> {
   public handleCourseChange = (event: React.FormEvent<EventTarget>) => {
     const target = event.target as HTMLInputElement;
     this.setState((prevState) => {
-      let courses;
-      if (prevState.formData.courses.indexOf(target.value) > -1) {
-        courses = prevState.formData.courses.filter((s) => s !== target.value);
-      } else {
-        courses = [...prevState.formData.courses, target.value];
+
+      // determine the new value for this.state.formData.courses
+      let newCourses;
+      if (prevState.formData.courses.indexOf(target.value) > -1) { // de-selecting a course
+        newCourses = prevState.formData.courses.filter((s) => s !== target.value); // remove the course
+      } else {  // selecting a course
+        for (const mutualExcusionSet of config.mutualExclusionSets) { // loop through all our exclusion sets
+          for (const i of mutualExcusionSet.courses) { // loop through this exclusion set's courses
+            if (i === target.value) { // the course we're trying to add belongs to this set of courses
+              for (const j of mutualExcusionSet.courses) { // loop through the same list again
+                if (prevState.formData.courses.indexOf(j) > -1) { // we've already added one of the other courses
+                  return null; // cancel this entire state change
+                }
+              }
+              break;
+            }
+          }
+        }
+        newCourses = [ ...prevState.formData.courses, target.value ]; // add the course
       }
-      return { formData: { ...prevState.formData, courses } };
+
+      // determine the new value for this.state.disabledCourses
+      const newDisabledCourses: string[] = [];
+      for (const mutualExcusionSet of config.mutualExclusionSets) { // loop through all our exclusion sets
+
+        for (const i of mutualExcusionSet.courses) { // loop through this exclusion set's courses
+          if (newCourses.indexOf(i) > -1) { // we have one of this set's courses selected
+            for (const j of mutualExcusionSet.courses) { // loop through the same list again
+              if (j !== i) { // this is one of the other courses from the set
+                if (newDisabledCourses.indexOf(j) === -1) { // it's not already in newDisabledCourses
+                  newDisabledCourses.push(j); // add it
+                }
+              }
+            }
+          }
+        }
+      }
+
+      return { formData: { ...prevState.formData, courses: newCourses }, disabledCourses: newDisabledCourses };
+
     }, () => {
       // update prices
       this.updatePrices();
@@ -563,7 +577,7 @@ export class App extends React.Component<Props, State> {
   private async validateTitle(): Promise<boolean> {
     const schema = Joi
       .string()
-      .equal(['Miss', 'Mrs.', 'Ms.', 'Mr.'])
+      .equal([ 'Miss', 'Mrs.', 'Ms.', 'Mr.' ])
       .error(new Error('Please choose either "Miss", "Mrs.", "Ms." or "Mr.".'));
     try {
       await Joi.validate(this.state.formData.title, schema);
@@ -830,15 +844,15 @@ export class App extends React.Component<Props, State> {
   }
 
   private needsProvince(): boolean {
-    const countries = ['CA', 'US', 'AU'];
+    const countries = [ 'CA', 'US', 'AU' ];
     return countries.indexOf(this.state.formData.countryCode) > -1;
   }
 
   private needPostal(): boolean {
-    const countries = ['AO', 'AG', 'AW', 'BS', 'BZ', 'BJ', 'BW', 'BF', 'BI', 'CM', 'TD', 'KM', 'CD', 'CG', 'CK', 'CW',
+    const countries = [ 'AO', 'AG', 'AW', 'BS', 'BZ', 'BJ', 'BW', 'BF', 'BI', 'CM', 'TD', 'KM', 'CD', 'CG', 'CK', 'CW',
       'DJ', 'DM', 'GQ', 'ER', 'FJ', 'GA', 'GM', 'GH', 'GD', 'GY', 'HM', 'HK', 'CI', 'JM', 'KI', 'LY', 'MO', 'MW', 'ML',
       'MR', 'MS', 'NA', 'NR', 'NU', 'KP', 'PA', 'QA', 'RE', 'RW', 'KN', 'LC', 'WS', 'ST', 'SC', 'SL', 'MF', 'SB', 'GS',
-      'SR', 'SY', 'TZ', 'TG', 'TK', 'TO', 'TT', 'TV', 'UG', 'AE', 'VU', 'YE', 'ZW'];
+      'SR', 'SY', 'TZ', 'TG', 'TK', 'TO', 'TT', 'TV', 'UG', 'AE', 'VU', 'YE', 'ZW' ];
     return countries.indexOf(this.state.formData.countryCode) === -1;
   }
 

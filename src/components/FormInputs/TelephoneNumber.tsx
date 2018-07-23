@@ -12,7 +12,7 @@ export class TelephoneNumber extends React.Component<Props> {
   public render() {
     return (
       <Input
-        type='text'
+        type='tel'
         label='Telephone Number'
         name='telephoneNumber'
         id='telephoneNumber'
@@ -20,7 +20,7 @@ export class TelephoneNumber extends React.Component<Props> {
         valid={this.props.valid}
         placeholder=''
         maxLength={50}
-        autoComplete='tel'
+        autoComplete='tel-national'
         changeFunc={this.props.changeFunc}
       />
     );

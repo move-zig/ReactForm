@@ -1,3 +1,7 @@
+$theme-colors: (
+  "primary": #ec3e86,
+);
+
 @import "~bootstrap/scss/bootstrap";
 @import url("https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i|Playfair+Display:400,400i,700,700i");
 
@@ -10,6 +14,10 @@ h3,.h3{font-weight:300;font-size:24px;line-height:28px}
 h4,.h4{font-weight:300;font-size:20px;line-height:24px}
 
 #logo{max-height:32px}
+
+.custom-control-input:disabled ~ .custom-control-label{color:#a3b1bd}
+.custom-control-label:before{background-color:#cacdd1}
+/*.custom-checkbox .custom-control-input:checked~.custom-control-label::before{background-color:black}*/
 
 .w-auto{width:auto!important}
 @media (min-width: 576px) {

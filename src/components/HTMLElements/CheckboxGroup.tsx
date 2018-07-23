@@ -1,10 +1,16 @@
 import * as React from 'react';
 
+export interface Option {
+  name: string | JSX.Element;
+  value: string;
+}
+
 export interface Props {
-  label?: string;
+  label?: string | JSX.Element;
   setName: string;
-  options: Array<{ name: string; value: string; }>;
+  options: Option[];
   selectedOptions: string[];
+  disabledOptions?: string[];
   valid: boolean | string;
   changeFunc: (event: React.ChangeEvent<any>) => void;
   blurFunc?: (event: React.FocusEvent<any>) => void;
@@ -44,6 +50,7 @@ export class CheckboxGroup extends React.Component<Props> {
           onBlur={this.props.blurFunc}
           value={opt.value}
           checked={this.props.selectedOptions.indexOf(opt.value) > -1}
+          disabled={typeof this.props.disabledOptions !== 'undefined' && this.props.disabledOptions.indexOf(opt.value) !== -1}
           id={this.props.setName + '-' + opt.value}
         />
         <label className={labelClassName} htmlFor={this.props.setName + '-' + opt.value}>
@@ -65,9 +72,9 @@ export class CheckboxGroup extends React.Component<Props> {
     if (this.props.valid === false) {
       return null;
     } else if (this.props.valid === true) {
-      return <small className='form-text text-success'>Looks good!</small>;
+      return <small className='form-text text-success'>✓</small>;
     } else {
-      return <small className='form-text text-danger'>{this.props.valid}</small>;
+      return <small className='form-text text-danger'>✖ {this.props.valid}</small>;
     }
   }
 

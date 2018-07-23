@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as React from 'react';
-import { Select, SelectOption } from '../HTMLElements/Select';
+import { Option, Select } from '../HTMLElements/Select';
 
 export interface Props {
   value: string;
@@ -9,7 +9,7 @@ export interface Props {
 }
 
 export interface State {
-  opts: SelectOption[];
+  opts: Option[];
 }
 
 export class Country extends React.Component<Props, State> {
@@ -45,7 +45,7 @@ export class Country extends React.Component<Props, State> {
     );
   }
 
-  private async getCountries(): Promise<SelectOption[]> {
+  private async getCountries(): Promise<Option[]> {
     const response = await axios.get('https://api.qccareerschool.com/geoLocation/countries');
     let countries = response.data.map((el: any) => ({ name: el.name, value: el.code }));
     countries = [
